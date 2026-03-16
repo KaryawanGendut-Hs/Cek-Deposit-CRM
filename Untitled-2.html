@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Matcher Premium</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-red: #f43f5e;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-card {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            background: linear-gradient(to right, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .header p { color: var(--text-dim); margin-top: 10px; }
+
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .box { flex: 1; display: flex; flex-direction: column; }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            height: 220px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        button:hover { transform: translateY(-3px); opacity: 0.9; }
+        button:active { transform: translateY(0); }
+
+        /* Style Hasil */
+        .result-container {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-divider {
+            padding: 12px 18px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border-radius: 10px;
+            margin: 20px 0 15px 0;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-divider.empty {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--accent-red);
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .item-row:hover { background: rgba(255, 255, 255, 0.05); }
+
+        .user-pill {
+            font-weight: 700;
+            color: #fff;
+            background: rgba(59, 130, 246, 0.2);
+            padding: 4px 12px;
+            border-radius: 6px;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .calc-details {
+            flex-grow: 1;
+            margin: 0 20px;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .total-badge {
+            font-weight: 800;
+            color: var(--accent-green);
+            font-size: 1.05rem;
+        }
+
+        .no-data { color: var(--accent-red); font-style: italic; opacity: 0.7; }
+
+        /* Animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .item-row { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="header">
+        <h2>PREMIUM DEPOSIT CHECKER</h2>
+        <p>Analisis data mutasi dengan presisi tinggi</p>
+    </div>
+    
+    <div class="flex-container">
+        <div class="box">
+            <label>Target User ID</label>
+            <textarea id="listUser" placeholder="Input ID... (Enter untuk baris baru)"></textarea>
+        </div>
+        <div class="box">
+            <label>Source Data Mutasi</label>
+            <textarea id="historyData" placeholder="Paste tabel mutasi di sini..."></textarea>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-check" onclick="processData()">
+            <span>🔍</span> PROSES DATA
+        </button>
+        <button class="btn-copy" onclick="copyToClipboard()">
+            <span>📋</span> COPY HASIL
+        </button>
+    </div>
+
+    <div id="resultArea" class="result-container">
+        <div id="output">
+            <p style="text-align: center; color: var(--text-dim);">Silakan masukkan data untuk memulai.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let lastGeneratedText = "";
+
+function processData() {
+    const userInputs = [...new Set(document.getElementById('listUser').value.split('\n').filter(i => i.trim() !== ""))];
+    const historyLines = document.getElementById('historyData').value.split('\n');
+    const output = document.getElementById('output');
+    
+    if (userInputs.length === 0) return;
+
+    let successList = [];
+    let failedList = [];
+
+    userInputs.forEach(user => {
+        let targetUser = user.trim().toLowerCase();
+        let foundPayments = [];
+        let totalAmount = 0;
+
+        historyLines.forEach(line => {
+            let columns = line.split(/\t|\s{2,}/); 
+            let userColIndex = columns.findIndex(col => col.trim().toLowerCase() === targetUser);
+
+            if (userColIndex !== -1) {
+                for (let i = userColIndex + 1; i < columns.length; i++) {
+                    let cell = columns[i].replace(/[.,]/g, '').trim();
+                    if (/^\d+$/.test(cell) && cell.length >= 4) { 
+                        let val = parseInt(cell);
+                        totalAmount += val;
+                        foundPayments.push(val.toLocaleString('id-ID'));
+                        break;
+                    }
+                }
+            }
+        });
+
+        if (foundPayments.length > 0) {
+            successList.push({
+                user: user.trim(),
+                details: foundPayments.join(' + '),
+                total: totalAmount.toLocaleString('id-ID'),
+                copyFormat: `${user.trim()} > ${foundPayments.join(' + ')} = ${totalAmount.toLocaleString('id-ID')}`
+            });
+        } else {
+            failedList.push({
+                user: user.trim(),
+                copyFormat: `${user.trim()} > Tidak ada transaksi ditemukan hari ini`
+            });
+        }
+    });
+
+    let html = `<div class="section-divider">🟢 BERHASIL DEPOSIT (${successList.length})</div>`;
+    successList.forEach(item => {
+        html += `
+        <div class="item-row">
+            <span class="user-pill">${item.user}</span>
+            <span class="calc-details">${item.details}</span>
+            <span class="total-badge">Rp ${item.total}</span>
+        </div>`;
+    });
+
+    html += `<div class="section-divider empty">🔴 User ID di bawah tidak ada melakukan Deposit</div>`;
+    failedList.forEach(item => {
+        html += `
+        <div class="item-row">
+            <span class="user-pill" style="background: rgba(244,63,94,0.1); color: var(--accent-red)">${item.user}</span>
+            <span class="calc-details no-data">Tidak ada transaksi ditemukan hari ini</span>
+        </div>`;
+    });
+
+    output.innerHTML = html;
+
+    lastGeneratedText = successList.map(i => i.copyFormat).join('\n') + 
+                        "\n\nUser ID di bawah tidak ada melakukan Deposit\n\n" + 
+                        failedList.map(i => i.copyFormat).join('\n');
+}
+
+function copyToClipboard() {
+    if (!lastGeneratedText) return;
+    navigator.clipboard.writeText(lastGeneratedText).then(() => {
+        const btn = document.querySelector('.btn-copy');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✅ TERSALIN!";
+        btn.style.background = "#10b981";
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = "";
+        }, 2000);
+    });
+}
+</script>
+
+</body>
+</html>
